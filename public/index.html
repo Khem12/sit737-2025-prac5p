@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <!-- --Inter CSS--  -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .calculator {
+            background-color: #92c7f0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        
+        .calculator input {
+            width: 100%;
+            height: 50px;
+            font-size: 24px;
+            text-align: right;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        
+        .calculator button {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .calculator button:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .calculator button:active {
+            background-color: #d0d0d0;
+        }
+        
+        .calculator button.operator {
+            background-color: #ff9500;
+            color: white;
+        }
+        
+        .calculator button.operator:hover {
+            background-color: #e68900;
+        }
+        
+        .calculator button.equal {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .calculator button.equal:hover {
+            background-color: #45a049;
+        }
+        
+        .calculator button.clear {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .calculator button.clear:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <!-- Heading -->
+    <h1>Welcome to the DemoCalculator</h1>
+    
+    <!-- Calculator Section -->
+    <div class="calculator">
+        <input type="text" id="display" disabled>
+        <div>
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="setOperator('+')">+</button>
+            
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="setOperator('-')">-</button>
+            
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button class="operator" onclick="setOperator('/')">/</button>
+            
+            <button onclick="appendToDisplay('0')" style="width: 135px;">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button class="operator" onclick="setOperator('*')">*</button>
+            <button class="equal" onclick="calculateResult()" style="width: 210px;">=</button>
+            <button class="clear" onclick="clearDisplay()">C</button>
+        </div>
+    </div>
+    <!-- --Script section-- -->
+    <script>
+        let operator = '';
+        let firstNumber = '';
+        
+        // Function to Append clicked number to the display
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+        
+        // Function to Clear the display
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+            firstNumber = '';
+            operator = '';
+        }
+        
+        //Function Store operator and first number
+        function setOperator(op) {
+            firstNumber = document.getElementById('display').value;
+            operator = op;
+            document.getElementById('display').value = '';  // Clear display for the second number
+        }
+        
+        // Using async function to Calculate result by calling backend API
+        async function calculateResult() {
+            const secondNumber = document.getElementById('display').value;
+            
+            // --Using if else and try catch--
+            if (operator && firstNumber && secondNumber) {
+                try {
+                    let response;
+                    const num1 = parseFloat(firstNumber);
+                    const num2 = parseFloat(secondNumber);
+                    
+                    if (operator === '+') {
+                        response = await fetch(`/add?n1=${num1}&n2=${num2}`);
+                    } else if (operator === '-') {
+                        response = await fetch(`/minus?n1=${num1}&n2=${num2}`);
+                    } else if (operator === '*') {
+                        response = await fetch(`/multiple?n1=${num1}&n2=${num2}`);
+                    } else if (operator === '/') {
+                        response = await fetch(`/divison?n1=${num1}&n2=${num2}`);
+                    }
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data from server');
+                    }
+                    
+                    const data = await response.json();
+                    if (data.statuscode === 200) {
+                        document.getElementById('display').value = data.data;
+                    } else {
+                        document.getElementById('display').value = 'Error';
+                    }
+                    
+                } catch (error) {
+                    console.log(error);
+                    document.getElementById('display').value = 'Error';
+                }
+            } else {
+                document.getElementById('display').value = 'Invalid input';
+            }
+        }
+    </script>
+    
+</body>
+</html>
