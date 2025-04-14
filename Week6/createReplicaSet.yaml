@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: khem-replicaset
+  namespace: default
+  labels:
+    app: khem
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: khem
+  template:
+    metadata:
+      labels:
+        app: khem
+    spec:
+      containers:
+      - name: khem
+        image: khem:latest
+        ports:
+        - containerPort: 80

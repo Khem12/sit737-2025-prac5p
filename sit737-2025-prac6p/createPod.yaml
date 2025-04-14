@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: calculatorapp
+  labels:
+    app: calc
+spec:
+  containers:
+  - name: calculatorapp
+    image: khemgrg/calculatorapp:latest
+    ports:
+    - containerPort: 3040

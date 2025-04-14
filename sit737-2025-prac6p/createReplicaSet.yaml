@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: calculatorapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calculatorapp
+  template:
+    metadata:
+      labels:
+        app: calculatorapp
+    spec:
+      containers:
+      - name: calculatorapp
+        image: khemgrg/calculatorapp:latest
+        ports:
+        - containerPort: 3040

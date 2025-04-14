@@ -1,0 +1,11 @@
+{
+    "name": "node-server",
+    "description": "",
+    "dependencies": {
+        "express": "^4.21.2",
+        "winston": "^3.17.0"
+    },
+    "scripts": {
+        "start": "node server.js"
+    }
+}
