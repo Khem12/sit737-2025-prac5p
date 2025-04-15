@@ -23,17 +23,17 @@ Runs on: `PORT 3040`
 ```bash
 docker build -t khemgrg/calculatorapp .
 
-2. Push the image to Docker Hub
-docker push your-dockerhub-username/calculatorapp
-
 ☸ Kubernetes Instructions
 Apply each YAML file using kubectl:
 
-1. Create Deployment
+2. Create Deployment
 kubectl apply -f createDeployment.yaml
 
-2. Create Service
+3. Create Service
 kubectl apply -f createService.yaml
+
+4. Push the image to Docker Hub
+docker push your-dockerhub-username/calculatorapp
 
 Access the app
 kubectl get svc
