@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mongo-backup
+spec:
+  schedule: "0 1 * * *"  # Daily at 1 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongo-backup
+            image: mongo:6.0
+            command:
+            - /bin/sh
+            - -c
+            - |
+              mongodump --host mongo --username $(MONGO_USERNAME) --password $(MONGO_PASSWORD) --authenticationDatabase admin --db userDB --out /backup/$(date +%Y%m%d) && \
+              tar czf /backup/userdb-$(date +%Y%m%d).tar.gz /backup/$(date +%Y%m%d) && \
+              rm -rf /backup/$(date +%Y%m%d)
+            env:
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: password
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: mongo-backup-pvc
